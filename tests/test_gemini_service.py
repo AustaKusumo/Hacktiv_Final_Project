@@ -19,6 +19,19 @@ class FakeClient:
         self.interactions = FakeInteractions()
 
 
+class LegacyInteractions:
+    def create(self, **_):
+        raise RuntimeError(
+            "The legacy Interactions API schema is no longer supported. "
+            "Please upgrade your google-genai Python SDK to version >= 2.0.0."
+        )
+
+
+class LegacyClient:
+    def __init__(self):
+        self.interactions = LegacyInteractions()
+
+
 def test_system_instruction_contains_persona_settings():
     instruction = build_system_instruction(
         ChatSettings(language="English", style="Akademik", expertise="Expert", length="Ringkas")
@@ -60,3 +73,14 @@ def test_ask_gemini_rejects_empty_api_key():
             settings=ChatSettings(),
         )
 
+
+def test_ask_gemini_explains_legacy_sdk_migration():
+    with pytest.raises(GeminiError, match=r"google-genai>=2\.0,<3"):
+        ask_gemini(
+            api_key="secret",
+            model="gemini-test",
+            question="test",
+            dataset_context="{}",
+            settings=ChatSettings(),
+            client_factory=lambda **_: LegacyClient(),
+        )

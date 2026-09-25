@@ -35,6 +35,21 @@ Aturan wajib:
 """
 
 
+def _friendly_sdk_error(exc: Exception) -> str:
+    """Translate known SDK migration failures into an actionable message."""
+    message = str(exc).strip() or exc.__class__.__name__
+    normalized = message.casefold()
+    if (
+        "legacy interactions api schema" in normalized
+        or "upgrade your google-genai" in normalized
+    ):
+        return (
+            "SDK Gemini pada deployment sudah usang. Upgrade ke "
+            "`google-genai>=2.0,<3`, lalu restart atau reboot aplikasi."
+        )
+    return f"Permintaan ke Gemini gagal: {message}"
+
+
 def ask_gemini(
     *,
     api_key: str,
@@ -77,6 +92,4 @@ def ask_gemini(
     except GeminiError:
         raise
     except Exception as exc:  # External SDK/network errors vary by version.
-        message = str(exc).strip() or exc.__class__.__name__
-        raise GeminiError(f"Permintaan ke Gemini gagal: {message}") from exc
-
+        raise GeminiError(_friendly_sdk_error(exc)) from exc

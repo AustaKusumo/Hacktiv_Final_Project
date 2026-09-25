@@ -60,6 +60,12 @@ copy .env.example .env
 streamlit run app.py
 ```
 
+Jika sebelumnya pernah memasang SDK Gemini versi 1.x, lakukan upgrade sebelum menjalankan aplikasi:
+
+```bash
+pip install --upgrade "google-genai>=2.0,<3"
+```
+
 Buka `http://localhost:8501`.
 
 API key dapat dibuat melalui [Google AI Studio](https://aistudio.google.com/app/apikey). Masukkan key ke `.env` atau langsung melalui sidebar aplikasi. Jangan commit file `.env`.
@@ -104,6 +110,7 @@ Test mencakup profiling dataset, pembatasan konteks LLM, fallback lokal, pembuat
 ├── screenshots/
 ├── .env.example
 ├── requirements.txt
+├── pytest.ini
 └── README.md
 ```
 
